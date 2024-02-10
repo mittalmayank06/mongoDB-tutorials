@@ -1,0 +1,69 @@
+->use flights
+->show dbs
+->db.flightData.insertOne(  { "key":"value", ......})//created objectId implicitly,
+NOTE: If u want to give unique ID can give,
+ex:  ->db.flightData.insertOne({"key":"value", _id:"abcdefghijklm1"})
+->db.flightData.find().pretty()
+NOTE: Behind the scenes, MongoDB uses BSON dataFormat but I/n &o/p we give JSON data format.(done by MongoDB drivers)
+-----------
+CRUD Operations & MongoDB:
+CREATE
+->insertOne(data,options)
+->insertMany(data,options)
+READ
+->find(filter,options)
+->findOne(filter, options)
+UPDATE
+->updateOne(filter,data,options)
+->update(filter,data, options) //this work without $set as well, It replaces the entire object(work as replaceOne() ) whereas updateOne() & updateMany() adds that col,
+->updateMany(filter,data, options)
+->replaceOne (filter,data,options)
+DELETE 
+->deleteOne(filter, options)
+->deleteMany (filter,options)
+
+EXAMPLES:
+->db.flightData.deleteOne( {departureAirport: "TXL"})
+->db.flightData.updateOne( {distance:12000}, {$set :{"marker":"delete"}  }); //adds marker col. where dis.=12k,
+->db.flightData.updateMany( {}, {$set : {"marker": "toDelete"} })
+->db.flightData.deleteMany( {"marker" :"toDelete" } )
+->db.flightData.find( {distance: {$gt: 10000 }})
+//$gt : greater than
+
+->db.flightData.updateOne( {_id:ObjectId("fdfddffdfdsfsadsd11")}, {$set: {delayed: true} })
+----------------------------------
+->db.passengers.insertMany( { {"key":"value", "key":"Value"}, {}, {}........})
+
+->db.passengers.find() //gives us cursor-object
+->it  //helps to retrieve data from cursor-object from find()
+->db.passengers.find().toArray()
+->db.passengers.find().forEach( (passengerData)=> {printjson(passengerData) })
+NOTE: pretty() works with cursor so give err. if we use with findOne(),
+------------------------
+PROJECTION: way to filter data at mongoDB server,
+->db.passengers.find( {}, {name: 1} ).pretty()
+->db.passengers.find( {},{name:1, _id: 0}).pretty()
+--------------
+EMBEDDED DOC. : (collection ke andar collection document)
+
+Arrays in embedded document:
+->db.passengers.updateOne( {name: "Albert Twostone"}, {$set : {hobbies:  ["sports", "cooking"]}  })
+->db.passengers.findOne( {name:"Albert Twostone"}).hobbies  // . is used to access array elements
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

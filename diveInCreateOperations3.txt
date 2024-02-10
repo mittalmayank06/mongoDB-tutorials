@@ -1,0 +1,19 @@
+:>Document Creation Methods (CREATE)
+:>Importing Documents
+-----------------
+>CREATE Documents: (insertOne, insertMany, mongoimport)
+NOTE: MongoDB by default, working with ordered Inserts, 
+but we can change this behaviour by {ordered:false}
+>db.hobbies.insertMany([{_id:"yoga",name:"Yoga"}, {_id:"cooking",name:"Cooking"}, {_id:"hiking",name:"Hiking"}
+ ], {ordered:false})
+\\as yoga,cooking already there, it'll insert hiking as well becoz {ordering:false}
+
+---------
+WriteConcern: (Not understand)
+;> { w:1, j:undefined}
+;> { w:1, j:true}
+;> { w:1, wtimeout:200, j: true}
+-----------------
+ATOMICITY : 
+Atomicity at doc. level
+but in insertMany(), it will insert doc. one by one till no issue comes,

@@ -1,0 +1,170 @@
+TOPICS TO COVER:
+->Understanding Document Schemas & dataTypes
+->Modelling Relations
+
+
+------------
+SHOP DB:
+>use shop
+>db.products.insertOne( {name:"A book", price:12.99})
+>db.products.insertOne( {title:"T-shirt", seller: {name: "Max",age:29}  })
+>db.products.find().pretty()
+-------------------
+DATA TYPES:
+>TEXT -- "mayank"
+>Boolean -- true/false
+>Number 
+   ->Integer (int32)
+   ->NumberLong (int64)
+   ->NumberDecimal -- 12.99
+>ObjectId  -- ObjectId("jffkfjshf")
+>ISODate  --ISODate("2024-08-02")
+>Timestamp  -- Timestamp(12345) //automatically created by mongodb
+->Embedded Documents  { {}, {},............}
+->Array   {  [.....]   }
+-------------------------------
+use test
+db.dropDatabase()
+db.patients.drop()
+-----
+>use companyData
+>db.companies.insertOne({name: "Apple Inc", isStartup:true,employees:33,funding:123456789876543210,details: {ceo:"Mark Williamson"}, tags:[{title: "super"}, {title:"perfect"}], foundingDate: new Date(), insertedAt: new Timestamp()  })
+//above query covers mostly all dataTypes,
+//Maybe issue comes with 64-bit large NUMBER dataType,
+>db.companies.drop()
+
+
+
+->db.stats()  //utility provided by MongoDB shell
+>db.numbers.insertOne({a: NumberInt(1)})
+>typeof db.numbers.findOne().a
+----------------------------------------------
+RELATIONS -options :
+>Nested/Embedded Documents
+>References (2 collections to reduce redundancy in data, like-favourite book,)
+
+-->ONE TO ONE relation - Embedded
+(Patient-Disease Summary)
+//Relations-reference
+>db.patients.insertOne( {name: "Max",age:29,diseaseSummary:"Summary-max-1"})
+//relations: Embedded
+>db.patients.insertOne( {name: "Max",age:29,diseaseSummary:{diseases:["cold","broken-leg"]}  })
+
+>db.diseaseSummaries.insertOne({_id:"Summary-max-1",diseases:["cold","broken-leg"]})
+>var dsid = db.patients.findOne({name:"Max"}).diseaseSummary
+>db.diseaseSummaries.findOne({_id:dsid })
+-------------
+Example2: (Person-car)
+>use carData
+>db.persons.insertOne({name:"Max",car: {model:"BMW",price:30000}  })
+>db.persons.findOne()
+
+>db.persons.insertOne({name:"Mayank",age:23,salary:60000})
+>db.cars.insertOne({model:"BMW",price:40000,owner: ObjectId("djdsljkjklhdjfkdsafhdsjfhdsf1")  })
+----------------------------------------
+One to Many Relation:
+Example3:  (Threads - Answer) like MCQ
+
+>use paper
+//Relational Approach
+>db.questionThreads.insertOne({creator:"Mayank", question:"How does all that work?", answers ["q11","q1a2" ] })
+>db.answers.insertMany( [{_id:"q1a1", text: "It works like that."}, {_id:"q1a2", text:"Thanks!!"}  ])
+//Embedded Approach
+>db.questionThreads.insertOne({creator:"Mayank", question:"How does that work?", answers: [{text:"like that,"}, {text:"Thanks!!"}]  })
+---------
+Example4: (City-Citizens)
+City: name, latitude, longitude
+Citizen: name, city-Id( ObjectId)
+----------------------------
+MANY TO MANY Relation:
+Example5: (Customers-Product)  --(Orders)
+
+>use shop
+>db.products.insertOne({title: "A book", price: 12.99})
+>db.customers.insertOne( {name:"Mayank",age:23})
+>db.orders.insertOne({productId:ObjectId("fdhghgdfdsfsfafa") , customerId: ObjectId("fdsfdsfdsfdsfdsafadsf")   })
+>db.orders.drop()
+//Reference approach,
+>db.customers.updateOne({}, {$set: {orders.[{productId:ObjectId("fdsfdfhgfhgdfgfsa"), quantity:2}, {productId:ObjectId("fdsfdgfgfdsfewer"), quantity:3} ]}  })
+
+//Embedded Approach
+db.customers.updateOne({}, {$set: {orders: [{title:"A book",price:12.99,quantity:2} ]}  })
+---------------
+Example6 : (Books - Authors)
+
+>use bookRegistry
+
+//Embedded Approach
+>db.books.insertOne({name:"My favourite book", authors:[{name:"Max Schwarz",age:23},{name:"Max Williamson",age:25} ]  })
+>db.authors.insertMany([{name:"Max Schwarz",age:23,address:{street:"Main"}}, {name:"Max 
+Williamson",age:25,address:{street:"Main"}}  ])
+
+//Reference Approach
+>db.books.updateOne({},{$set: {authors:[ObjectId("ffdsfdsfdsfdsafsdfds"), ObjectId("fhgfdhgdfgfgfgfsdfggdf")  ] }})
+
+CONCLUSION: Reference Approach is far better than Embedded Approach
+-----------
+Joining with $lookup
+Example:
+CUSTOMERS:
+{
+ userName: "max",
+ favBooks: ['id1','id2']
+}
+BOOKS:
+{
+ _id: 'id1',
+name:"Lord of the Rings1"
+}
+JOINING-Process:
+customers.aggregate([
+ { $lookup: {
+      from: "books",
+      localField: "favBooks",
+      foreignField: "_id"
+      as: "favBookData"
+   } 
+ }
+])
+-----
+Example2: (book-author)
+>db.books.aggregate([ {$lookup: {from:"authors",localField:"authors",foreignField:"_id", as: "Creators" } } ])
+-------------------------------------------------------------
+
+EXAMPLE Project : Blog
+ :>USER (Create post,Edit post,Delete post, fetch post, fetch posts,comment)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
